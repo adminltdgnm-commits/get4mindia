@@ -105,9 +105,9 @@
   .form-box { background: var(--white); border: 1px solid var(--border); padding: 40px; }
   .form-group { margin-bottom: 20px; }
   label { display: block; font-size: 12px; font-weight: 600; color: var(--ink-soft); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
-  input[type=text], input[type=email], textarea, select {
+  input[type=text], input[type=email], input[type=tel], textarea, select {
     width: 100%; font-family: var(--sans); font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid var(--border); padding: 10px 14px; outline: none; appearance: none; -webkit-appearance: none; }
-  input[type=text]:focus, input[type=email]:focus, textarea:focus, select:focus { border-color: var(--saffron); }
+  input[type=text]:focus, input[type=email]:focus, input[type=tel]:focus, textarea:focus, select:focus { border-color: var(--saffron); }
   textarea { resize: vertical; min-height: 90px; }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .submit-btn { width: 100%; background: var(--ink); color: var(--white); font-family: var(--sans); font-size: 14px; font-weight: 600; border: none; padding: 14px; cursor: pointer; letter-spacing: 0.5px; margin-top: 8px; }
@@ -363,19 +363,19 @@
           <p><strong style="font-weight: 600; color: var(--ink);">What happens next?</strong> We review your requirement, identify the best supplier in India, check stock and pricing, and send you a clean itemized quote. If we cannot source it, we tell you honestly.</p>
         </div>
       </div>
-      <div class="form-box">
+      <form class="form-box" id="websiteInquiryForm" action="https://script.google.com/macros/s/AKfycbyqkQLg5JrDmOiEULCVV5fu9bw02DKdVazmG3blUKyFlwsVA5IgF5wVa0e7LPkmvhIwIg/exec" method="POST" target="inquirySubmitFrame" onsubmit="return handleSubmit(event)">
         <div class="form-group">
           <label for="company">Company Name *</label>
-          <input type="text" id="company" placeholder="Your importing company">
+          <input type="text" id="company" name="company" placeholder="Your importing company">
         </div>
         <div class="form-row">
           <div class="form-group">
             <label for="name">Your Name *</label>
-            <input type="text" id="name" placeholder="Full name">
+            <input type="text" id="name" name="name" placeholder="Full name">
           </div>
           <div class="form-group">
             <label for="country">Country *</label>
-            <select id="country">
+            <select id="country" name="country">
               <option value="">Select country</option>
               <option>Kenya</option>
               <option>Nigeria</option>
@@ -387,31 +387,39 @@
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label for="email">Email Address *</label>
-          <input type="email" id="email" placeholder="you@company.com">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input type="email" id="email" name="email" placeholder="you@company.com">
+          </div>
+          <div class="form-group">
+            <label for="whatsapp">WhatsApp Number</label>
+            <input type="tel" id="whatsapp" name="whatsapp" placeholder="+254 700 000 000">
+          </div>
         </div>
         <div class="form-group">
           <label for="product">Product / Category *</label>
-          <input type="text" id="product" placeholder="e.g. Bajaj RE spare parts, engine oil 15W40, cotton fabric">
+          <input type="text" id="product" name="product" placeholder="e.g. Bajaj RE spare parts, engine oil 15W40, cotton fabric">
         </div>
         <div class="form-row">
           <div class="form-group">
             <label for="quantity">Quantity / Volume</label>
-            <input type="text" id="quantity" placeholder="e.g. 500 units, 1 x 20ft">
+            <input type="text" id="quantity" name="quantity" placeholder="e.g. 500 units, 1 x 20ft">
           </div>
           <div class="form-group">
             <label for="port">Destination Port</label>
-            <input type="text" id="port" placeholder="e.g. Mombasa, Lagos">
+            <input type="text" id="port" name="port" placeholder="e.g. Mombasa, Lagos">
           </div>
         </div>
         <div class="form-group">
           <label for="notes">Additional Details</label>
-          <textarea id="notes" placeholder="Specifications, brand preferences, timeline, any other requirement..."></textarea>
+          <textarea id="notes" name="notes" placeholder="Specifications, brand preferences, timeline, any other requirement..."></textarea>
+          <input type="hidden" id="sourcePage" name="sourcePage" value="">
         </div>
-        <button class="submit-btn" onclick="handleSubmit()">Submit Requirement →</button>
+        <button class="submit-btn" type="submit">Submit Requirement →</button>
         <p class="form-note">We respond within 24–48 hours on business days. Your information is not shared with anyone.</p>
-      </div>
+      </form>
+      <iframe name="inquirySubmitFrame" style="display: none;" title="Inquiry submission"></iframe>
     </div>
   </div>
 </section>
@@ -479,7 +487,8 @@
 </footer>
 
 <script>
-function handleSubmit() {
+function handleSubmit(event) {
+  if (!event) return true;
   const fields = ['company','name','email','country','product'];
   let ok = true;
   fields.forEach(function(f) {
@@ -487,11 +496,13 @@ function handleSubmit() {
     if (!el.value.trim()) { el.style.borderColor = '#c0392b'; ok = false; }
     else el.style.borderColor = '';
   });
-  if (!ok) { alert('Please fill in all required fields.'); return; }
+  if (!ok) { event.preventDefault(); alert('Please fill in all required fields.'); return false; }
+  document.getElementById('sourcePage').value = window.location.href;
   const btn = document.querySelector('.submit-btn');
   btn.textContent = '✓ Submitted — we will be in touch within 48 hours';
   btn.style.background = '#2d6a4f';
   btn.disabled = true;
+  return true;
 }
 </script>
 
