@@ -113,6 +113,13 @@
   .submit-btn { width: 100%; background: var(--ink); color: var(--white); font-family: var(--sans); font-size: 14px; font-weight: 600; border: none; padding: 14px; cursor: pointer; letter-spacing: 0.5px; margin-top: 8px; }
   .submit-btn:hover { background: var(--saffron); }
   .form-note { font-size: 12px; color: var(--ink-muted); margin-top: 12px; line-height: 1.5; }
+  .product-card { background: var(--surface); border: 1px solid var(--border); padding: 18px; margin-bottom: 16px; }
+  .product-card-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .product-card-title { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ink); }
+  .add-product-btn, .remove-product-btn { font-family: var(--sans); font-size: 12px; font-weight: 600; border: 1px solid var(--border); background: var(--white); color: var(--ink); padding: 9px 12px; cursor: pointer; }
+  .add-product-btn { width: 100%; margin: 4px 0 20px; }
+  .remove-product-btn { display: none; color: #8a1f11; }
+  .product-card.can-remove .remove-product-btn { display: inline-block; }
 
   .visit-bg { background: var(--white); border-top: 1px solid var(--border); }
   .visit-inner { max-width: 1100px; margin: 0 auto; padding: 80px 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
@@ -397,20 +404,49 @@
             <input type="tel" id="whatsapp" name="whatsapp" placeholder="+254 700 000 000">
           </div>
         </div>
-        <div class="form-group">
-          <label for="product">Product / Category *</label>
-          <input type="text" id="product" name="product" placeholder="e.g. Bajaj RE spare parts, engine oil 15W40, cotton fabric">
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="quantity">Quantity / Volume</label>
-            <input type="text" id="quantity" name="quantity" placeholder="e.g. 500 units, 1 x 20ft">
+        <div id="productItems">
+          <div class="product-card" data-product-item>
+            <div class="product-card-header">
+              <span class="product-card-title">Product 1</span>
+              <button class="remove-product-btn" type="button" onclick="removeProductItem(this)">Remove</button>
+            </div>
+            <div class="form-group">
+              <label>Product / Category *</label>
+              <input type="text" data-field="product" placeholder="e.g. Bajaj RE spare parts, engine oil 15W40, cotton fabric">
+            </div>
+            <div class="form-group">
+              <label>Specification / Brand / Grade</label>
+              <input type="text" data-field="specification" placeholder="e.g. API CI-4, Bajaj genuine, 100% cotton">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Quantity / Volume</label>
+                <input type="text" data-field="quantity" placeholder="e.g. 500 units, 1 x 20ft">
+              </div>
+              <div class="form-group">
+                <label>Target Price</label>
+                <input type="text" data-field="targetPrice" placeholder="Optional">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Destination Port / City</label>
+                <input type="text" data-field="destination" placeholder="e.g. Mombasa, Lagos">
+              </div>
+              <div class="form-group">
+                <label>Required Documents</label>
+                <input type="text" data-field="documents" placeholder="e.g. COO, MSDS, inspection">
+              </div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="port">Destination Port</label>
-            <input type="text" id="port" name="port" placeholder="e.g. Mombasa, Lagos">
-          </div>
         </div>
+        <button class="add-product-btn" type="button" onclick="addProductItem()">+ Add another product</button>
+        <input type="hidden" id="product" name="product" value="">
+        <input type="hidden" id="quantity" name="quantity" value="">
+        <input type="hidden" id="port" name="port" value="">
+        <input type="hidden" id="targetPrice" name="targetPrice" value="">
+        <input type="hidden" id="documents" name="documents" value="">
+        <input type="hidden" id="productItemsJson" name="productItems" value="">
         <div class="form-group">
           <label for="notes">Additional Details</label>
           <textarea id="notes" name="notes" placeholder="Specifications, brand preferences, timeline, any other requirement..."></textarea>
@@ -487,23 +523,84 @@
 </footer>
 
 <script>
+function addProductItem() {
+  const container = document.getElementById('productItems');
+  const first = container.querySelector('[data-product-item]');
+  const clone = first.cloneNode(true);
+
+  clone.querySelectorAll('input').forEach(function(input) {
+    input.value = '';
+    input.style.borderColor = '';
+  });
+
+  container.appendChild(clone);
+  updateProductLabels();
+}
+
+function removeProductItem(button) {
+  const container = document.getElementById('productItems');
+  if (container.querySelectorAll('[data-product-item]').length <= 1) return;
+  button.closest('[data-product-item]').remove();
+  updateProductLabels();
+}
+
+function updateProductLabels() {
+  document.querySelectorAll('[data-product-item]').forEach(function(card, index) {
+    card.querySelector('.product-card-title').textContent = 'Product ' + (index + 1);
+    card.classList.toggle('can-remove', index > 0);
+  });
+}
+
+function collectProductItems() {
+  return Array.from(document.querySelectorAll('[data-product-item]')).map(function(card, index) {
+    const item = { itemNo: index + 1 };
+    card.querySelectorAll('[data-field]').forEach(function(input) {
+      item[input.dataset.field] = input.value.trim();
+    });
+    return item;
+  }).filter(function(item) {
+    return item.product || item.specification || item.quantity || item.targetPrice || item.destination || item.documents;
+  });
+}
+
 function handleSubmit(event) {
   if (!event) return true;
-  const fields = ['company','name','email','country','product'];
+  const fields = ['company','name','email','country'];
   let ok = true;
   fields.forEach(function(f) {
     const el = document.getElementById(f);
     if (!el.value.trim()) { el.style.borderColor = '#c0392b'; ok = false; }
     else el.style.borderColor = '';
   });
+
+  const productItems = collectProductItems();
+  document.querySelectorAll('[data-field="product"]').forEach(function(input) {
+    if (!input.value.trim()) { input.style.borderColor = '#c0392b'; ok = false; }
+    else input.style.borderColor = '';
+  });
+
   if (!ok) { event.preventDefault(); alert('Please fill in all required fields.'); return false; }
+
+  const productSummary = productItems.map(function(item) {
+    return item.itemNo + '. ' + item.product + (item.quantity ? ' - ' + item.quantity : '') + (item.destination ? ' - ' + item.destination : '');
+  }).join('\n');
+
+  document.getElementById('product').value = productSummary;
+  document.getElementById('quantity').value = productItems.map(function(item) { return item.quantity; }).filter(Boolean).join('\n');
+  document.getElementById('port').value = productItems.map(function(item) { return item.destination; }).filter(Boolean).join('\n');
+  document.getElementById('targetPrice').value = productItems.map(function(item) { return item.targetPrice; }).filter(Boolean).join('\n');
+  document.getElementById('documents').value = productItems.map(function(item) { return item.documents; }).filter(Boolean).join('\n');
+  document.getElementById('productItemsJson').value = JSON.stringify(productItems);
   document.getElementById('sourcePage').value = window.location.href;
+
   const btn = document.querySelector('.submit-btn');
   btn.textContent = '✓ Submitted — we will be in touch within 48 hours';
   btn.style.background = '#2d6a4f';
   btn.disabled = true;
   return true;
 }
+
+updateProductLabels();
 </script>
 
 </body>
