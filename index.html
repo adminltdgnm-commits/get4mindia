@@ -384,13 +384,61 @@
             <label for="country">Country *</label>
             <select id="country" name="country">
               <option value="">Select country</option>
-              <option>Kenya</option>
-              <option>Nigeria</option>
-              <option>Tanzania</option>
-              <option>Uganda</option>
-              <option>Ethiopia</option>
-              <option>Ghana</option>
-              <option>Other</option>
+              <option data-code="+213">Algeria</option>
+              <option data-code="+244">Angola</option>
+              <option data-code="+229">Benin</option>
+              <option data-code="+267">Botswana</option>
+              <option data-code="+226">Burkina Faso</option>
+              <option data-code="+257">Burundi</option>
+              <option data-code="+238">Cabo Verde</option>
+              <option data-code="+237">Cameroon</option>
+              <option data-code="+236">Central African Republic</option>
+              <option data-code="+235">Chad</option>
+              <option data-code="+269">Comoros</option>
+              <option data-code="+242">Congo</option>
+              <option data-code="+243">Democratic Republic of the Congo</option>
+              <option data-code="+253">Djibouti</option>
+              <option data-code="+20">Egypt</option>
+              <option data-code="+240">Equatorial Guinea</option>
+              <option data-code="+291">Eritrea</option>
+              <option data-code="+268">Eswatini</option>
+              <option data-code="+251">Ethiopia</option>
+              <option data-code="+241">Gabon</option>
+              <option data-code="+220">Gambia</option>
+              <option data-code="+233">Ghana</option>
+              <option data-code="+224">Guinea</option>
+              <option data-code="+245">Guinea-Bissau</option>
+              <option data-code="+225">Ivory Coast</option>
+              <option data-code="+254">Kenya</option>
+              <option data-code="+266">Lesotho</option>
+              <option data-code="+231">Liberia</option>
+              <option data-code="+218">Libya</option>
+              <option data-code="+261">Madagascar</option>
+              <option data-code="+265">Malawi</option>
+              <option data-code="+223">Mali</option>
+              <option data-code="+222">Mauritania</option>
+              <option data-code="+230">Mauritius</option>
+              <option data-code="+212">Morocco</option>
+              <option data-code="+258">Mozambique</option>
+              <option data-code="+264">Namibia</option>
+              <option data-code="+227">Niger</option>
+              <option data-code="+234">Nigeria</option>
+              <option data-code="+250">Rwanda</option>
+              <option data-code="+239">Sao Tome and Principe</option>
+              <option data-code="+221">Senegal</option>
+              <option data-code="+248">Seychelles</option>
+              <option data-code="+232">Sierra Leone</option>
+              <option data-code="+252">Somalia</option>
+              <option data-code="+27">South Africa</option>
+              <option data-code="+211">South Sudan</option>
+              <option data-code="+249">Sudan</option>
+              <option data-code="+255">Tanzania</option>
+              <option data-code="+228">Togo</option>
+              <option data-code="+216">Tunisia</option>
+              <option data-code="+256">Uganda</option>
+              <option data-code="+260">Zambia</option>
+              <option data-code="+263">Zimbabwe</option>
+              <option data-code="">Other</option>
             </select>
           </div>
         </div>
@@ -401,7 +449,7 @@
           </div>
           <div class="form-group">
             <label for="whatsapp">WhatsApp Number</label>
-            <input type="tel" id="whatsapp" name="whatsapp" placeholder="+254 700 000 000">
+            <input type="tel" id="whatsapp" name="whatsapp" placeholder="Select country to add code">
           </div>
         </div>
         <div id="productItems">
@@ -563,6 +611,28 @@ function collectProductItems() {
   });
 }
 
+let lastAutoDialCode = '';
+
+function updateWhatsappDialCode() {
+  const country = document.getElementById('country');
+  const whatsapp = document.getElementById('whatsapp');
+  const selected = country.options[country.selectedIndex];
+  const dialCode = selected ? selected.dataset.code || '' : '';
+  const currentValue = whatsapp.value.trim();
+
+  if (!dialCode) {
+    whatsapp.placeholder = 'Enter WhatsApp number with country code';
+    return;
+  }
+
+  whatsapp.placeholder = dialCode + ' WhatsApp number';
+
+  if (!currentValue || currentValue === lastAutoDialCode) {
+    whatsapp.value = dialCode + ' ';
+    lastAutoDialCode = dialCode;
+  }
+}
+
 function handleSubmit(event) {
   if (!event) return true;
   const fields = ['company','name','email','country'];
@@ -601,6 +671,7 @@ function handleSubmit(event) {
 }
 
 updateProductLabels();
+document.getElementById('country').addEventListener('change', updateWhatsappDialCode);
 </script>
 
 </body>
