@@ -104,6 +104,8 @@
   .form-intro .promise p { font-size: 14px; color: var(--ink-soft); margin: 0; }
   .form-box { background: var(--white); border: 1px solid var(--border); padding: 40px; }
   .form-group { margin-bottom: 20px; }
+  .form-section-title { font-size: 13px; font-weight: 700; color: var(--ink); letter-spacing: 1px; text-transform: uppercase; margin: 28px 0 14px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .field-help { font-size: 12px; color: var(--ink-muted); line-height: 1.5; margin-top: 6px; }
   label { display: block; font-size: 12px; font-weight: 600; color: var(--ink-soft); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
   input[type=text], input[type=email], input[type=tel], textarea, select {
     width: 100%; font-family: var(--sans); font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid var(--border); padding: 10px 14px; outline: none; appearance: none; -webkit-appearance: none; }
@@ -120,6 +122,15 @@
   .add-product-btn { width: 100%; margin: 4px 0 20px; }
   .remove-product-btn { display: none; color: #8a1f11; }
   .product-card.can-remove .remove-product-btn { display: inline-block; }
+  .hsn-results { display: none; background: var(--white); border: 1px solid var(--border); margin-top: 8px; max-height: 220px; overflow-y: auto; }
+  .hsn-result { padding: 10px 12px; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .hsn-result:last-child { border-bottom: none; }
+  .hsn-result:hover { background: #fff8ec; }
+  .hsn-code { font-size: 12px; font-weight: 700; color: var(--saffron-dark); letter-spacing: 0.5px; }
+  .hsn-title { font-size: 13px; color: var(--ink); margin-top: 2px; }
+  .hsn-category { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
+  .hsn-selected { display: none; background: #fff8ec; border: 1px solid rgba(201, 124, 31, 0.28); padding: 12px; margin-top: 10px; font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+  .hsn-selected strong { color: var(--ink); }
 
   .visit-bg { background: var(--white); border-top: 1px solid var(--border); }
   .visit-inner { max-width: 1100px; margin: 0 auto; padding: 80px 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
@@ -452,11 +463,102 @@
             <input type="tel" id="whatsapp" name="whatsapp" placeholder="Select country to add code">
           </div>
         </div>
+
+        <div class="form-section-title">Shipment & Quote Requirement</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="buyingStage">Buying Stage</label>
+            <select id="buyingStage" name="buyingStage">
+              <option value="">Select stage</option>
+              <option>Just checking feasibility</option>
+              <option>Need quotation</option>
+              <option>Ready to order</option>
+              <option>Repeat purchase / regular requirement</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="shipmentSize">Shipment Size *</label>
+            <select id="shipmentSize" name="shipmentSize">
+              <option value="">Select shipment size</option>
+              <option>Full container - 20ft</option>
+              <option>Full container - 40ft</option>
+              <option>Full container - 40ft HC</option>
+              <option>Part container / LCL</option>
+              <option>Air shipment</option>
+              <option>Not sure</option>
+            </select>
+            <p class="field-help">Tell us if you want one full container or only part-container space.</p>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="incoterm">Quote Basis / Incoterm</label>
+            <select id="incoterm" name="incoterm">
+              <option value="">Not sure</option>
+              <option>FOB India port</option>
+              <option>CIF destination port</option>
+              <option>CFR destination port</option>
+              <option>EXW supplier factory</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="timeline">Timeline / Urgency</label>
+            <select id="timeline" name="timeline">
+              <option value="">Select timeline</option>
+              <option>Urgent - within 7 days</option>
+              <option>Within 2-4 weeks</option>
+              <option>Within 1-3 months</option>
+              <option>Planning for future</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="qualityExpectation">Quality Expectation</label>
+            <select id="qualityExpectation" name="qualityExpectation">
+              <option value="">Select quality expectation</option>
+              <option>Lowest workable price</option>
+              <option>Standard export quality</option>
+              <option>Branded / premium quality</option>
+              <option>Certified product only</option>
+              <option>Not sure</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="currentSupplierPrice">Current Supplier Price</label>
+            <select id="currentSupplierPrice" name="currentSupplierPrice">
+              <option value="">Select option</option>
+              <option>Yes, I want India comparison</option>
+              <option>No, I need market pricing</option>
+              <option>I only have a rough budget</option>
+              <option>Prefer not to share now</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-section-title">Product Items</div>
         <div id="productItems">
           <div class="product-card" data-product-item>
             <div class="product-card-header">
               <span class="product-card-title">Product 1</span>
               <button class="remove-product-btn" type="button" onclick="removeProductItem(this)">Remove</button>
+            </div>
+            <div class="form-group">
+              <label>Product Category *</label>
+              <select data-field="category" onchange="updateProductCategoryHints(this)">
+                <option value="">Select category</option>
+                <option>Auto parts / spare parts</option>
+                <option>Lubricants / oils / chemicals</option>
+                <option>Machinery / equipment</option>
+                <option>Building material</option>
+                <option>Textiles / garments</option>
+                <option>Food / agro products</option>
+                <option>Packaging material</option>
+                <option>Electrical / electronics</option>
+                <option>Industrial consumables</option>
+                <option>Other</option>
+              </select>
+              <p class="field-help" data-category-help>Select category so we ask the right specification details.</p>
             </div>
             <div class="form-group">
               <label>Product / Category *</label>
@@ -465,6 +567,15 @@
             <div class="form-group">
               <label>Specification / Brand / Grade</label>
               <input type="text" data-field="specification" placeholder="e.g. API CI-4, Bajaj genuine, 100% cotton">
+            </div>
+            <div class="form-group">
+              <label>HSN Code / Product Classification</label>
+              <input type="text" data-field="hsnSearch" oninput="searchHsn(this)" placeholder="Search by keyword or code, e.g. engine oil, clutch, cotton, 2710">
+              <input type="hidden" data-field="hsnCode" value="">
+              <input type="hidden" data-field="hsnDescription" value="">
+              <div class="hsn-results" data-hsn-results></div>
+              <div class="hsn-selected" data-hsn-selected></div>
+              <p class="field-help">Optional. Use this as a starting point only; final HSN should be verified before quote/export documents.</p>
             </div>
             <div class="form-row">
               <div class="form-group">
@@ -486,6 +597,30 @@
                 <input type="text" data-field="documents" placeholder="e.g. COO, MSDS, inspection">
               </div>
             </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Packaging Required</label>
+                <select data-field="packaging">
+                  <option value="">Not sure</option>
+                  <option>Cartons</option>
+                  <option>Drums / barrels</option>
+                  <option>Bags / sacks</option>
+                  <option>Palletized export packing</option>
+                  <option>Retail packing</option>
+                  <option>Loose / bulk packing</option>
+                  <option>Supplier standard packing</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Alternatives Acceptable?</label>
+                <select data-field="alternatives">
+                  <option value="">Select option</option>
+                  <option>Yes, similar Indian alternatives are acceptable</option>
+                  <option>Only exact brand / specification</option>
+                  <option>Not sure</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
         <button class="add-product-btn" type="button" onclick="addProductItem()">+ Add another product</button>
@@ -495,6 +630,7 @@
         <input type="hidden" id="targetPrice" name="targetPrice" value="">
         <input type="hidden" id="documents" name="documents" value="">
         <input type="hidden" id="productItemsJson" name="productItems" value="">
+        <input type="hidden" id="quoteContextJson" name="quoteContext" value="">
         <div class="form-group">
           <label for="notes">Additional Details</label>
           <textarea id="notes" name="notes" placeholder="Specifications, brand preferences, timeline, any other requirement..."></textarea>
@@ -576,9 +712,15 @@ function addProductItem() {
   const first = container.querySelector('[data-product-item]');
   const clone = first.cloneNode(true);
 
-  clone.querySelectorAll('input').forEach(function(input) {
-    input.value = '';
-    input.style.borderColor = '';
+  clone.querySelectorAll('input, select').forEach(function(field) {
+    field.value = '';
+    field.style.borderColor = '';
+  });
+  const help = clone.querySelector('[data-category-help]');
+  if (help) help.textContent = 'Select category so we ask the right specification details.';
+  clone.querySelectorAll('[data-hsn-results], [data-hsn-selected]').forEach(function(box) {
+    box.innerHTML = '';
+    box.style.display = 'none';
   });
 
   container.appendChild(clone);
@@ -611,6 +753,84 @@ function collectProductItems() {
   });
 }
 
+const HSN_LOOKUP = [
+  { code: '2710', category: 'Mineral fuels / oils', name: 'Petroleum oils and oils obtained from bituminous minerals', keywords: 'engine oil lubricant lubricants grease hydraulic oil gear oil 15w40 diesel oil petroleum' },
+  { code: '8708', category: 'Vehicles / auto parts', name: 'Parts and accessories of motor vehicles', keywords: 'auto parts spare parts clutch brake shoe bajaj re vehicle parts automotive component' },
+  { code: '4011', category: 'Rubber products', name: 'New pneumatic tyres of rubber', keywords: 'tyre tire pneumatic rubber vehicle tyre motorcycle tyre truck tyre' },
+  { code: '4016', category: 'Rubber products', name: 'Other articles of vulcanised rubber', keywords: 'rubber parts gasket seal o ring rubber component' },
+  { code: '8409', category: 'Machinery / engine parts', name: 'Parts suitable for engines', keywords: 'engine parts piston liner valve crankshaft diesel engine parts' },
+  { code: '8483', category: 'Machinery parts', name: 'Transmission shafts, gears, bearings and related parts', keywords: 'gear bearing shaft clutch pulley sprocket transmission parts' },
+  { code: '8421', category: 'Machinery / filters', name: 'Filtering or purifying machinery and apparatus', keywords: 'filter oil filter fuel filter air filter purifier filtration' },
+  { code: '8501', category: 'Electrical machinery', name: 'Electric motors and generators', keywords: 'electric motor generator alternator motor' },
+  { code: '8544', category: 'Electrical goods', name: 'Insulated wire, cable and electrical conductors', keywords: 'wire cable electrical cable conductor wiring' },
+  { code: '6109', category: 'Garments', name: 'T-shirts, singlets and other vests, knitted or crocheted', keywords: 'tshirt t-shirt vest garment apparel knitted cotton shirt' },
+  { code: '6203', category: 'Garments', name: "Men's or boys' suits, jackets, trousers and shorts", keywords: 'mens garment trousers pants shorts jacket apparel' },
+  { code: '5208', category: 'Textiles', name: 'Woven fabrics of cotton', keywords: 'cotton fabric textile woven fabric grey fabric printed fabric' },
+  { code: '6305', category: 'Textile packaging', name: 'Sacks and bags for packing goods', keywords: 'sack bag packing textile packaging jute bag pp bag' },
+  { code: '3923', category: 'Plastic packaging', name: 'Plastic articles for packing or conveyance of goods', keywords: 'plastic packaging bottle cap container bag pouch packaging material' },
+  { code: '4819', category: 'Paper packaging', name: 'Cartons, boxes, cases, bags and other packing containers of paper', keywords: 'carton box paper packaging corrugated box carton box' },
+  { code: '7308', category: 'Iron / steel structures', name: 'Structures and parts of structures of iron or steel', keywords: 'steel structure building material fabrication frame tower' },
+  { code: '7210', category: 'Iron / steel flat products', name: 'Flat-rolled iron or non-alloy steel products, clad/plated/coated', keywords: 'steel sheet galvanized sheet roofing sheet coil gi sheet' },
+  { code: '6907', category: 'Ceramic products', name: 'Ceramic flags, paving, hearth or wall tiles', keywords: 'tiles ceramic tiles floor tiles wall tiles building material' },
+  { code: '2523', category: 'Cement', name: 'Portland cement, aluminous cement, slag cement and similar hydraulic cements', keywords: 'cement portland cement construction building material' },
+  { code: '1006', category: 'Food / agro', name: 'Rice', keywords: 'rice basmati non basmati parboiled broken rice agro food grain' },
+  { code: '0902', category: 'Food / agro', name: 'Tea', keywords: 'tea black tea green tea ctc tea agro food' },
+  { code: '0904', category: 'Spices', name: 'Pepper, chillies and peppers', keywords: 'pepper chilli chili spices red chilli black pepper' },
+  { code: '0910', category: 'Spices', name: 'Ginger, saffron, turmeric, thyme, bay leaves, curry and other spices', keywords: 'turmeric ginger spice curry spices masala' },
+  { code: '1207', category: 'Oil seeds', name: 'Other oil seeds and oleaginous fruits', keywords: 'sesame seed oil seed castor seed agro' },
+  { code: '1515', category: 'Vegetable oils', name: 'Other fixed vegetable or microbial fats and oils', keywords: 'castor oil sesame oil vegetable oil agro oil' },
+  { code: '3004', category: 'Pharmaceuticals', name: 'Medicaments in measured doses or retail packing', keywords: 'medicine pharmaceutical tablets capsules medicament' },
+  { code: '3402', category: 'Cleaning products', name: 'Organic surface-active agents and washing preparations', keywords: 'detergent cleaning liquid soap washing powder surfactant' }
+];
+
+function searchHsn(input) {
+  const card = input.closest('[data-product-item]');
+  const resultsBox = card.querySelector('[data-hsn-results]');
+  const query = input.value.trim().toLowerCase();
+
+  if (query.length < 2) {
+    resultsBox.style.display = 'none';
+    resultsBox.innerHTML = '';
+    return;
+  }
+
+  const matches = HSN_LOOKUP.filter(function(item) {
+    return item.code.indexOf(query) === 0 ||
+      item.name.toLowerCase().includes(query) ||
+      item.category.toLowerCase().includes(query) ||
+      item.keywords.toLowerCase().includes(query);
+  }).slice(0, 6);
+
+  if (!matches.length) {
+    resultsBox.innerHTML = '<div class="hsn-result"><div class="hsn-title">No local match. We can verify HSN manually during review.</div></div>';
+    resultsBox.style.display = 'block';
+    return;
+  }
+
+  resultsBox.innerHTML = matches.map(function(item) {
+    return '<div class="hsn-result" onclick="selectHsn(this)" data-code="' + item.code + '" data-name="' + item.name.replace(/"/g, '&quot;') + '" data-category="' + item.category.replace(/"/g, '&quot;') + '">' +
+      '<div class="hsn-code">HSN ' + item.code + '</div>' +
+      '<div class="hsn-title">' + item.name + '</div>' +
+      '<div class="hsn-category">' + item.category + '</div>' +
+      '</div>';
+  }).join('');
+  resultsBox.style.display = 'block';
+}
+
+function selectHsn(result) {
+  const card = result.closest('[data-product-item]');
+  const code = result.dataset.code;
+  const name = result.dataset.name;
+  const category = result.dataset.category;
+
+  card.querySelector('[data-field="hsnSearch"]').value = 'HSN ' + code + ' - ' + name;
+  card.querySelector('[data-field="hsnCode"]').value = code;
+  card.querySelector('[data-field="hsnDescription"]').value = name + ' | ' + category;
+  card.querySelector('[data-hsn-results]').style.display = 'none';
+  card.querySelector('[data-hsn-selected]').innerHTML = '<strong>Selected:</strong> HSN ' + code + '<br>' + name + '<br><span>' + category + '</span>';
+  card.querySelector('[data-hsn-selected]').style.display = 'block';
+}
+
 let lastAutoDialCode = '';
 
 function updateWhatsappDialCode() {
@@ -633,9 +853,39 @@ function updateWhatsappDialCode() {
   }
 }
 
+function updateProductCategoryHints(select) {
+  const card = select.closest('[data-product-item]');
+  const help = card.querySelector('[data-category-help]');
+  const spec = card.querySelector('[data-field="specification"]');
+  const documents = card.querySelector('[data-field="documents"]');
+  const category = select.value;
+
+  const hints = {
+    'Auto parts / spare parts': ['Helpful details: vehicle model, part number, OEM/genuine/aftermarket preference.', 'e.g. Bajaj RE 4S, part number, OEM or aftermarket', 'e.g. COO, inspection report'],
+    'Lubricants / oils / chemicals': ['Helpful details: grade, viscosity, base oil, MSDS/COA requirement, packing size.', 'e.g. 15W40 API CI-4, 20L pail or 208L drum', 'e.g. MSDS, COA, COO'],
+    'Machinery / equipment': ['Helpful details: capacity, voltage, automation level, warranty and spare parts needs.', 'e.g. capacity, voltage, phase, output per hour', 'e.g. CE, inspection, manual, warranty'],
+    'Building material': ['Helpful details: size, grade, finish, standard, packing and breakage tolerance.', 'e.g. size, grade, finish, IS/ASTM standard', 'e.g. test certificate, COO, inspection'],
+    'Textiles / garments': ['Helpful details: fabric GSM, composition, size/color mix, labels and packing.', 'e.g. 180 GSM cotton, size/color mix, private label', 'e.g. COO, test report, packing list'],
+    'Food / agro products': ['Helpful details: grade, crop year, moisture, shelf life and food certificates.', 'e.g. grade, crop year, moisture %, packing size', 'e.g. phytosanitary, fumigation, COA, COO'],
+    'Packaging material': ['Helpful details: dimensions, micron/GSM, print, roll/bag/carton format.', 'e.g. size, micron/GSM, print colors, roll or bag', 'e.g. COO, material certificate'],
+    'Electrical / electronics': ['Helpful details: voltage, plug type, certification, warranty and spare parts.', 'e.g. voltage, wattage, plug type, certification', 'e.g. test certificate, warranty, COO'],
+    'Industrial consumables': ['Helpful details: grade, dimensions, material, usage and replacement frequency.', 'e.g. material, size, grade, industrial application', 'e.g. COO, test certificate']
+  };
+
+  const chosen = hints[category];
+  if (!chosen) {
+    help.textContent = 'Add exact specs, target use, packing, and any certificate needed.';
+    return;
+  }
+
+  help.textContent = chosen[0];
+  spec.placeholder = chosen[1];
+  documents.placeholder = chosen[2];
+}
+
 function handleSubmit(event) {
   if (!event) return true;
-  const fields = ['company','name','email','country'];
+  const fields = ['company','name','email','country','shipmentSize'];
   let ok = true;
   fields.forEach(function(f) {
     const el = document.getElementById(f);
@@ -644,9 +894,12 @@ function handleSubmit(event) {
   });
 
   const productItems = collectProductItems();
-  document.querySelectorAll('[data-field="product"]').forEach(function(input) {
-    if (!input.value.trim()) { input.style.borderColor = '#c0392b'; ok = false; }
-    else input.style.borderColor = '';
+  document.querySelectorAll('[data-product-item]').forEach(function(card) {
+    ['category','product'].forEach(function(fieldName) {
+      const field = card.querySelector('[data-field="' + fieldName + '"]');
+      if (!field.value.trim()) { field.style.borderColor = '#c0392b'; ok = false; }
+      else field.style.borderColor = '';
+    });
   });
 
   if (!ok) { event.preventDefault(); alert('Please fill in all required fields.'); return false; }
@@ -661,6 +914,14 @@ function handleSubmit(event) {
   document.getElementById('targetPrice').value = productItems.map(function(item) { return item.targetPrice; }).filter(Boolean).join('\n');
   document.getElementById('documents').value = productItems.map(function(item) { return item.documents; }).filter(Boolean).join('\n');
   document.getElementById('productItemsJson').value = JSON.stringify(productItems);
+  document.getElementById('quoteContextJson').value = JSON.stringify({
+    buyingStage: document.getElementById('buyingStage').value,
+    shipmentSize: document.getElementById('shipmentSize').value,
+    incoterm: document.getElementById('incoterm').value,
+    timeline: document.getElementById('timeline').value,
+    qualityExpectation: document.getElementById('qualityExpectation').value,
+    currentSupplierPrice: document.getElementById('currentSupplierPrice').value
+  });
   document.getElementById('sourcePage').value = window.location.href;
 
   const btn = document.querySelector('.submit-btn');
